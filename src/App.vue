@@ -6,9 +6,8 @@
              @change="handleInputChange" />
     <a-button type="primary"
               @click="addItemToList">添加事项</a-button>
-
     <a-list bordered
-            :dataSource="list"
+            :dataSource="infolist"
             class="dt_list">
       <a-list-item slot="renderItem"
                    slot-scope="item">
@@ -27,12 +26,15 @@
         <span>{{unDoneLength}}条剩余</span>
         <!-- 操作按钮 -->
         <a-button-group>
-          <a-button type="primary">全部</a-button>
-          <a-button>未完成</a-button>
-          <a-button>已完成</a-button>
+          <a-button :type="viewKey ==='all' ? 'primary' : 'default'"
+                    @click="changList('all')">全部</a-button>
+          <a-button :type="viewKey ==='undone' ? 'primary' : 'default'"
+                    @click="changList('undone')">未完成</a-button>
+          <a-button :type="viewKey ==='done' ? 'primary' : 'default'"
+                    @click="changList('done')">已完成</a-button>
         </a-button-group>
         <!-- 把已经完成的任务清空 -->
-        <a>清除已完成</a>
+        <a @click="clean">清除已完成</a>
       </div>
     </a-list>
   </div>
@@ -50,14 +52,16 @@ export default {
     this.$store.dispatch('getList')
   },
   computed: {
-    ...mapState(['list', 'inputValue']),
-    ...mapGetters(['unDoneLength'])
+    ...mapState(['inputValue', 'viewKey']),
+    ...mapGetters(['unDoneLength', 'infolist'])
 
   },
   methods: {
+    // 监听文本框内容变化
     handleInputChange (e) {
       this.$store.commit('setInputValue', e.target.value)
     },
+    // 向列表中新增 item 项
     addItemToList () {
       if (this.inputValue.trim().length <= 0) {
         // ant ui提供$message
@@ -65,10 +69,13 @@ export default {
       }
       this.$store.commit('addItem')
     },
+    // 很据Id删除对应的任务事项
     removeItemById (id) {
       this.$store.commit('removeItem', id)
     },
+    // 监听复选框选中状态变化的事件
     cbChange (e, id) {
+      // 通过 e.target.checked 可以接受到最新的选中状态
       /* console.log(e.target.checked) */
       /*  console.log(id) */
       const param = {
@@ -76,6 +83,14 @@ export default {
         status: e.target.checked
       }
       this.$store.commit('changStatus', param)
+    },
+    // 清除已完成的任务
+    clean () {
+      this.$store.commit('cleanDone')
+    },
+    // 修改页面上展示的列表数据
+    changList (key) {
+      this.$store.commit('changViewkey', key)
     }
   }
 }
