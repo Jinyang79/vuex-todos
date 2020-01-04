@@ -65,7 +65,7 @@ export default new Vuex.Store({
   actions: {
     // 通过axios获取数据
     getList (context) {
-      axios.get('https://jinyang79.github.io/list.json').then(({ data }) => {
+      axios.get('https://jinyang79.github.io/dist/list.json').then(({ data }) => {
         // console.log(data)
         context.commit('initList', data)
       })
