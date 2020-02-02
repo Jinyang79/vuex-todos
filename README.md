@@ -1,4 +1,4 @@
-# vue_demo1
+# vuex-todos
 
 ## Project setup
 ```
